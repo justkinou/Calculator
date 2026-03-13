@@ -1,4 +1,4 @@
-package com.example.calculator.ui.screens.homeScreen
+package com.example.calculator.ui.screens.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

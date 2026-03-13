@@ -19,9 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.calculator.util.Routes
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
     Scaffold(modifier = Modifier.fillMaxSize()) {
         padding -> Column(
             modifier = Modifier
@@ -62,7 +64,7 @@ fun HomeScreen() {
                 }
 
                 OutlinedButton(
-                    onClick = {  },
+                    onClick = { navController.navigate(Routes.ABOUT) },
                     modifier = Modifier
                         .defaultMinSize(minWidth = 300.dp)
                 ) {

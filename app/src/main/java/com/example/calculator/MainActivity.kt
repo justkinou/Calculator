@@ -11,6 +11,7 @@ import com.example.calculator.ui.screens.about.AboutScreen
 import com.example.calculator.ui.screens.home.HomeScreen
 import com.example.calculator.ui.theme.CalculatorTheme
 import com.example.calculator.util.Routes
+import kotlin.system.exitProcess
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +25,13 @@ class MainActivity : ComponentActivity() {
                     startDestination = Routes.HOME,
                 ) {
                     composable(Routes.HOME) {
-                        HomeScreen(navController)
+                        HomeScreen(
+                            navController = navController,
+                            onExit = {
+                                finishAffinity()
+                                exitProcess(0)
+                            }
+                        )
                     }
 
                     composable(Routes.ABOUT) {

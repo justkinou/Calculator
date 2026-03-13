@@ -23,7 +23,10 @@ import androidx.navigation.NavController
 import com.example.calculator.util.Routes
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+        navController: NavController,
+        onExit: () -> Unit
+    ) {
     Scaffold(modifier = Modifier.fillMaxSize()) {
         padding -> Column(
             modifier = Modifier
@@ -72,7 +75,7 @@ fun HomeScreen(navController: NavController) {
                 }
 
                 Button(
-                    onClick = {  },
+                    onClick = onExit,
                     modifier = Modifier
                         .defaultMinSize(minWidth = 300.dp)
                 ) {

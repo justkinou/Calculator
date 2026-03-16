@@ -27,7 +27,7 @@ import com.example.calculator.ui.theme.VitaminC
 fun BasicCalculator(navController: NavController) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { TopBar(navController) }
+        topBar = { TopBar("Basic Calculator", navController) }
     ) {
         padding -> Column(
             modifier = Modifier

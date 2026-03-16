@@ -26,7 +26,7 @@ import com.example.calculator.ui.composables.TopBar
 fun AboutScreen(navController: NavController) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { TopBar(navController) },
+        topBar = { TopBar("About", navController) },
     ) {
         padding -> Column(
             modifier = Modifier

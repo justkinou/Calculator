@@ -15,9 +15,12 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(navController: NavController) {
+fun TopBar(
+    title: String,
+    navController: NavController,
+) {
     TopAppBar(
-        title = { Text("About", fontSize = 20.sp) },
+        title = { Text(title, fontSize = 20.sp) },
         navigationIcon = {
             if (navController.previousBackStackEntry != null) {
                 IconButton(onClick = { navController.navigateUp() }) {

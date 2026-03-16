@@ -51,7 +51,7 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 OutlinedButton(
-                    onClick = {  },
+                    onClick = { navController.navigate(Routes.BASIC_CALCULATOR) },
                     modifier = Modifier
                         .defaultMinSize(minWidth = 300.dp)
                 ) {

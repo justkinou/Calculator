@@ -2,15 +2,11 @@ package com.example.calculator.ui.screens.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,55 +27,49 @@ fun HomeScreen(
         padding -> Column(
             modifier = Modifier
                 .padding(padding)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 "Calculator",
-                fontSize = 32.sp,
+                fontSize = 48.sp,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
             )
 
-            Text("Author: Andrii Bialkovskyi", fontSize = 14.sp)
-
-            Spacer(modifier = Modifier.height(10.dp))
+            Text("Author: Andrii Bialkovskyi", fontSize = 16.sp)
 
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                OutlinedButton(
+                HomeButton(
+                    text = "Basic Calculator",
                     onClick = { navController.navigate(Routes.BASIC_CALCULATOR) },
-                    modifier = Modifier
-                        .defaultMinSize(minWidth = 300.dp)
-                ) {
-                    Text("Basic calculator")
-                }
+                    modifier = Modifier.fillMaxWidth(),
+                )
 
-                OutlinedButton(
+                HomeButton(
+                    text = "Advanced Calculator",
                     onClick = {  },
-                    modifier = Modifier
-                        .defaultMinSize(minWidth = 300.dp)
-                ) {
-                    Text("Advanced calculator")
-                }
+                    modifier = Modifier.fillMaxWidth(),
+                )
 
-                OutlinedButton(
+                HomeButton(
+                    text = "About",
                     onClick = { navController.navigate(Routes.ABOUT) },
-                    modifier = Modifier
-                        .defaultMinSize(minWidth = 300.dp)
-                ) {
-                    Text("About")
-                }
+                    modifier = Modifier.fillMaxWidth(),
+                )
 
                 Button(
                     onClick = onExit,
-                    modifier = Modifier
-                        .defaultMinSize(minWidth = 300.dp)
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text("Exit")
+                    Text("Exit", fontSize = 16.sp)
                 }
             }
         }

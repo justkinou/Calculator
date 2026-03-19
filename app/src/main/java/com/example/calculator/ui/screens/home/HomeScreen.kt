@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,37 +41,41 @@ fun HomeScreen(
                 fontWeight = FontWeight.Bold,
             )
 
-            Text("Author: Andrii Bialkovskyi", fontSize = 16.sp)
+            Text("Author: Andrii Bialkovskyi", fontSize = 24.sp)
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 10.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                    .padding(vertical = 10.dp, horizontal = 40.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                HomeButton(
-                    text = "Basic Calculator",
+                OutlinedButton(
+                    modifier = Modifier.fillMaxWidth(),
                     onClick = { navController.navigate(Routes.BASIC_CALCULATOR) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                ) {
+                    Text("Basic Calculator", fontSize = 24.sp)
+                }
 
-                HomeButton(
-                    text = "Advanced Calculator",
-                    onClick = {  },
+                OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
-                )
+                    onClick = { navController.navigate(Routes.BASIC_CALCULATOR) },
+                ) {
+                    Text("Advanced Calculator", fontSize = 24.sp)
+                }
 
-                HomeButton(
-                    text = "About",
+                OutlinedButton(
+                    modifier = Modifier.fillMaxWidth(),
                     onClick = { navController.navigate(Routes.ABOUT) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                ) {
+                    Text("About", fontSize = 24.sp)
+                }
 
                 Button(
-                    onClick = onExit,
                     modifier = Modifier.fillMaxWidth(),
+                    onClick = onExit,
                 ) {
-                    Text("Exit", fontSize = 16.sp)
+                    Text("Exit", fontSize = 24.sp)
                 }
             }
         }

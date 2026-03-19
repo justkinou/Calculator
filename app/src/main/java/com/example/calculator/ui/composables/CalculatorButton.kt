@@ -26,7 +26,7 @@ fun CalculatorButton(
         onClick = onClick,
         modifier = Modifier
             .clip(RoundedCornerShape(100.dp))
-            .padding(horizontal = 10.dp)
+            .padding(5.dp)
             .then(modifier),
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(

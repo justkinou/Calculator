@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.calculator.core.BasicCalculatorViewModel
 import com.example.calculator.ui.screens.about.AboutScreen
 import com.example.calculator.ui.screens.basicCalculator.BasicCalculator
 import com.example.calculator.ui.screens.home.HomeScreen
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(Routes.BASIC_CALCULATOR) {
-                        BasicCalculator(navController)
+                        BasicCalculator()
                     }
                 }
             }

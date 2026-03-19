@@ -21,7 +21,10 @@ class BasicCalculatorViewModel : ViewModel() {
                 expression.value = toggleSign()
             }
             else -> {
-                if (!"0123456789".contains(symbol)) {
+                if (!"0123456789.".contains(symbol)) {
+                    expression.value += ' '
+                }
+                if ("-+/*".contains(expression.value.getOrElse(expression.value.length - 1, { ' ' }))) {
                     expression.value += ' '
                 }
                 expression.value += symbol
@@ -39,6 +42,9 @@ class BasicCalculatorViewModel : ViewModel() {
             --i;
         }
         if (i == -1) {
+            if ("01234567890".contains(expr.getOrElse(0, { ' ' }))) {
+                return "-$expr"
+            }
             return expr
         }
         if (expr[i] == '-') {

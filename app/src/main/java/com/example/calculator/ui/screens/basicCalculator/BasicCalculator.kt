@@ -1,5 +1,6 @@
 package com.example.calculator.ui.screens.basicCalculator
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import com.example.calculator.core.BasicCalculatorViewModel
 import com.example.calculator.ui.composables.CalculatorButton
@@ -24,8 +27,14 @@ import com.example.calculator.ui.theme.Carbon
 import com.example.calculator.ui.theme.QuickSilver
 import com.example.calculator.ui.theme.VitaminC
 
+data class ButtonData(
+    val symbol: String,
+    val color: Color
+)
+
 @Composable
 fun BasicCalculator(viewModel: BasicCalculatorViewModel = BasicCalculatorViewModel()) {
+    val context = LocalContext.current
     val expression = viewModel.expressionText.collectAsState()
 
     Scaffold(modifier = Modifier.fillMaxSize()) {
@@ -46,7 +55,7 @@ fun BasicCalculator(viewModel: BasicCalculatorViewModel = BasicCalculatorViewMod
                         symbolColor = Black,
                         backgroundColor = QuickSilver,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("AC") },
                     )
 
                     CalculatorButton(
@@ -54,7 +63,7 @@ fun BasicCalculator(viewModel: BasicCalculatorViewModel = BasicCalculatorViewMod
                         symbolColor = Black,
                         backgroundColor = QuickSilver,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("C") },
                     )
 
                     CalculatorButton(
@@ -62,14 +71,14 @@ fun BasicCalculator(viewModel: BasicCalculatorViewModel = BasicCalculatorViewMod
                         symbolColor = Black,
                         backgroundColor = QuickSilver,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("±") },
                     )
 
                     CalculatorButton(
                         symbol = "/",
                         backgroundColor = VitaminC,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("/") },
                     )
                 }
 
@@ -78,28 +87,28 @@ fun BasicCalculator(viewModel: BasicCalculatorViewModel = BasicCalculatorViewMod
                         symbol = "7",
                         backgroundColor = Carbon,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("7") },
                     )
 
                     CalculatorButton(
                         symbol = "8",
                         backgroundColor = Carbon,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("8") },
                     )
 
                     CalculatorButton(
                         symbol = "9",
                         backgroundColor = Carbon,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("9") },
                     )
 
                     CalculatorButton(
                         symbol = "*",
                         backgroundColor = VitaminC,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("*") },
                     )
                 }
 
@@ -108,28 +117,28 @@ fun BasicCalculator(viewModel: BasicCalculatorViewModel = BasicCalculatorViewMod
                         symbol = "4",
                         backgroundColor = Carbon,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("4") },
                     )
 
                     CalculatorButton(
                         symbol = "5",
                         backgroundColor = Carbon,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("5") },
                     )
 
                     CalculatorButton(
                         symbol = "6",
                         backgroundColor = Carbon,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("6") },
                     )
 
                     CalculatorButton(
                         symbol = "-",
                         backgroundColor = VitaminC,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("-") },
                     )
                 }
 
@@ -138,28 +147,28 @@ fun BasicCalculator(viewModel: BasicCalculatorViewModel = BasicCalculatorViewMod
                         symbol = "1",
                         backgroundColor = Carbon,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("1") },
                     )
 
                     CalculatorButton(
                         symbol = "2",
                         backgroundColor = Carbon,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("2") },
                     )
 
                     CalculatorButton(
                         symbol = "3",
                         backgroundColor = Carbon,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("3") },
                     )
 
                     CalculatorButton(
                         symbol = "+",
                         backgroundColor = VitaminC,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick("+") },
                     )
                 }
 
@@ -168,7 +177,7 @@ fun BasicCalculator(viewModel: BasicCalculatorViewModel = BasicCalculatorViewMod
                         symbol = "0",
                         backgroundColor = Carbon,
                         modifier = Modifier.weight(2f).fillMaxHeight(),
-                        onClick = { },
+                        onClick = { viewModel.onClick("0") },
                     )
 
 
@@ -176,14 +185,24 @@ fun BasicCalculator(viewModel: BasicCalculatorViewModel = BasicCalculatorViewMod
                         symbol = ".",
                         backgroundColor = Carbon,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = { viewModel.onClick(".") },
                     )
 
                     CalculatorButton(
                         symbol = "=",
                         backgroundColor = VitaminC,
                         modifier = Modifier.weight(1f).aspectRatio(1f),
-                        onClick = { },
+                        onClick = {
+                            try {
+                                viewModel.onClick("=")
+                            } catch (e: Exception) {
+                                Toast.makeText(
+                                    context,
+                                    "Failed to evaluate expression",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                            }
+                        },
                     )
                 }
             }

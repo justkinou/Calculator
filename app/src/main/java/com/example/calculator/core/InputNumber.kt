@@ -3,74 +3,55 @@ package com.example.calculator.core
 import java.math.BigDecimal
 
 class InputNumber {
-    private var repr = StringBuilder("0")
-    private var hasDecimal = false
-    private var putDecimal = false
-    private var isPositive = true
+    private var number = StringBuilder("0")
 
-    private fun isEmpty(): Boolean {
-        return repr.length == 1 && repr[0] == '0'
+    private fun isBlank(): Boolean {
+        return number.length == 1 && number[0] == '0'
+    }
+
+    private fun hasDecimalPoint(): Boolean {
+        return number.contains('.');
     }
 
     fun addDigit(d: Char) {
-        if (isEmpty()) {
-            repr.deleteAt(0)
-            repr.append(d)
+        if (isBlank()) {
+            number.deleteAt(0)
+            number.append(d)
             return
         }
-        if (hasDecimal && !putDecimal) {
-            repr.deleteAt(repr.length - 1)
-            repr.append(d)
-            return
-        }
-        repr.append(d)
+        number.append(d)
     }
 
-    fun addDecimal() {
-        if (hasDecimal) {
+    fun addDecimalPoint() {
+        if (hasDecimalPoint()) {
             return
         }
-        hasDecimal = true
-        repr.append(".0")
+        number.append(".")
     }
 
-    fun removeDigit() {
-        if (repr.length == 1) {
-            isPositive = true
-            repr.deleteAt(0)
-            repr.append("0")
-            return
+    fun backspace(): Boolean {
+        if (isBlank()) {
+            return true
         }
-        if (repr[repr.length - 2] == '.') {
-            putDecimal = false
-            hasDecimal = false
-            repr.deleteRange(repr.length - 2, repr.length)
-            return
+        number.deleteAt(number.length - 1)
+        if (number.isEmpty()) {
+            number.append('0')
         }
-        repr.deleteAt(repr.length - 1)
+        return false
     }
 
     fun toggleSign() {
-        if (isEmpty()) {
-            isPositive = true
+        if (isBlank()) {
             return
         }
-        isPositive = !isPositive
-    }
-
-    override fun toString(): String {
-        val strRepr = repr.toString()
-        if (!isPositive) {
-            return "-$strRepr"
+        if (number[0] == '-') {
+            number.deleteAt(0)
+        } else {
+            number.insert(0, '-')
         }
-        return strRepr
     }
 
     fun toBigDecimal(): BigDecimal {
-        var strRepr = repr.toString()
-        if (!isPositive) {
-            strRepr = "-$strRepr"
-        }
-        return BigDecimal(strRepr)
+        return BigDecimal(number.toString())
     }
 }

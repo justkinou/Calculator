@@ -1,59 +1,121 @@
 package com.example.calculator.core
 
 import androidx.lifecycle.ViewModel
-import com.notkamui.keval.Keval
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import java.math.BigDecimal
+
+private data class CalculatorState(
+    var prevNumber: InputNumber? = null,
+    var currNumber: InputNumber? = null,
+    var operator: Char? = null,
+)
 
 class BasicCalculatorViewModel : ViewModel() {
-    private val expression = MutableStateFlow("")
-    val expressionText: StateFlow<String> = expression
+    private val state = MutableStateFlow(CalculatorState())
 
-    fun onClick(symbol: String) {
+    fun onClick(symbol: BasicSymbol) {
         when (symbol) {
-            "AC", "C" -> {
-                expression.value = ""
-            }
-            "=" -> {
-                expression.value = evaluate()
-            }
-            "±" -> {
-                expression.value = toggleSign()
-            }
-            else -> {
-                if (!"0123456789.".contains(symbol)) {
-                    expression.value += ' '
-                }
-                if ("-+/*".contains(expression.value.getOrElse(expression.value.length - 1, { ' ' }))) {
-                    expression.value += ' '
-                }
-                expression.value += symbol
-            }
+            BasicSymbol.Clear -> clearInput()
+            BasicSymbol.ClearAll -> clearAll()
+            BasicSymbol.Backspace -> backspace()
+            BasicSymbol.Add -> changeOperator('+')
+            BasicSymbol.Subtract -> changeOperator('-')
+            BasicSymbol.Divide -> changeOperator('/')
+            BasicSymbol.Multiply -> changeOperator('*')
+            BasicSymbol.Evaluate -> evaluate()
+            BasicSymbol.DecimalPoint -> TODO()
+            BasicSymbol.ToggleSign -> TODO()
+            BasicSymbol.Zero -> TODO()
+            BasicSymbol.One -> TODO()
+            BasicSymbol.Two -> TODO()
+            BasicSymbol.Three -> TODO()
+            BasicSymbol.Four -> TODO()
+            BasicSymbol.Five -> TODO()
+            BasicSymbol.Six -> TODO()
+            BasicSymbol.Seven -> TODO()
+            BasicSymbol.Eight -> TODO()
+            BasicSymbol.Nine -> TODO()
         }
     }
 
-    private fun toggleSign(): String {
-        val expr = expression.value
-        var i = expr.length - 1
-        while (i >= 0 && expr[i] < '0' && expr[i] > '9') {
-            --i
-        }
-        while (i >= 0 && expr[i] >= '0' && expr[i] <= '9') {
-            --i;
-        }
-        if (i == -1) {
-            if ("01234567890".contains(expr.getOrElse(0, { ' ' }))) {
-                return "-$expr"
-            }
-            return expr
-        }
-        if (expr[i] == '-') {
-            return expr.substring(0, i) + expr.substring(i + 1)
-        }
-        return expr.substring(0, i + 1) + "-" + expr.substring(i + 1)
+    fun clearAll() {
+        state.update { CalculatorState() }
     }
 
-    private fun evaluate(): String {
-        return Keval.eval(expression.value).toString()
+    private fun clearInput() {
+        state.update({ currState ->
+            if (currState.currNumber != null) {
+                currState.currNumber = currState.prevNumber
+                currState.prevNumber = null
+            } else if (currState.operator != null) {
+                currState.operator = null
+                currState.currNumber = currState.prevNumber
+                currState.prevNumber = null
+            }
+            currState.copy()
+        })
+    }
+
+    private fun backspace() {
+        state.update({ currState ->
+            if (currState.currNumber != null) {
+                if (currState.currNumber?.backspace() == true) {
+                    currState.currNumber = currState.prevNumber
+                    currState.prevNumber = null
+                }
+            } else if (currState.operator != null) {
+                currState.operator = null
+            }
+            currState.copy()
+        })
+    }
+
+    private fun changeOperator(operator: Char) {
+        state.update { currState ->
+            currState.operator = operator
+            if (currState.prevNumber == null) {
+                if (currState.currNumber == null) {
+                    currState.prevNumber = InputNumber()
+                } else {
+                    currState.prevNumber = currState.currNumber
+                    currState.currNumber = null
+                }
+            }
+            currState.copy()
+        }
+    }
+
+    private fun evaluate() {
+        state.update { currState ->
+            var left = currState.prevNumber?.toBigDecimal()
+            if (left == null) {
+                left = BigDecimal(0)
+            }
+            var right = currState.currNumber?.toBigDecimal()
+            if (right == null) {
+                right = BigDecimal(0)
+            }
+            val result = when (currState.operator) {
+                '+' -> left.add(right)
+                '-' -> left.subtract(right)
+                '*' -> left.multiply(right)
+                '/' -> left.divide(right)
+                else -> null
+            }
+            if (result != null) {
+                currState.prevNumber = null
+                currState.operator = null
+                currState.currNumber = InputNumber(result.toString())
+            }
+            currState.copy()
+        }
+    }
+
+    private fun addDecimalPoint() {
+        state.update { currState ->
+            currState.currNumber?.addDecimalPoint()
+            currState.copy()
+        }
     }
 }

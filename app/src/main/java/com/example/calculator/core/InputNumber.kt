@@ -5,6 +5,12 @@ import java.math.BigDecimal
 class InputNumber {
     private var number = StringBuilder("0")
 
+    constructor() { }
+
+    constructor(s: String) {
+        number = StringBuilder(s)
+    }
+
     private fun isBlank(): Boolean {
         return number.length == 1 && number[0] == '0'
     }
@@ -51,7 +57,15 @@ class InputNumber {
         }
     }
 
+    override fun toString(): String {
+        var res = number.toString()
+        if (number.getOrElse(number.length - 1, { ' ' }) == '.') {
+            res += "0"
+        }
+        return res
+    }
+
     fun toBigDecimal(): BigDecimal {
-        return BigDecimal(number.toString())
+        return BigDecimal(toString())
     }
 }

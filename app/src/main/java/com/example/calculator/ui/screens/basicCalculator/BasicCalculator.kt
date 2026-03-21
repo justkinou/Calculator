@@ -5,6 +5,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
@@ -24,7 +26,7 @@ import com.example.calculator.ui.composables.NumPad
 
 @Composable
 fun BasicCalculator(viewModel: BasicCalculatorViewModel = BasicCalculatorViewModel()) {
-    val expression = viewModel.expressionText.collectAsState()
+    val state = viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
     val configuration = LocalConfiguration.current
     var cols = 4
@@ -50,10 +52,29 @@ fun BasicCalculator(viewModel: BasicCalculatorViewModel = BasicCalculatorViewMod
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp)
+                    .padding(10.dp),
+//                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    expression.value,
+                    text = state.value.prevNumber?.toString() ?: "",
+                    fontSize = 64.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(scrollState),
+                    textAlign = TextAlign.Right,
+                )
+
+                Text(
+                    text = state.value.operator?.toString() ?: "",
+                    fontSize = 64.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(scrollState),
+                    textAlign = TextAlign.Right,
+                )
+
+                Text(
+                    text = state.value.currNumber?.toString() ?: "0",
                     fontSize = 64.sp,
                     modifier = Modifier
                         .fillMaxWidth()

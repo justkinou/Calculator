@@ -1,18 +1,21 @@
 package com.example.calculator.core
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import java.math.BigDecimal
 
-private data class CalculatorState(
+data class CalculatorState(
     var prevNumber: InputNumber? = null,
     var currNumber: InputNumber? = null,
     var operator: Char? = null,
 )
 
 class BasicCalculatorViewModel : ViewModel() {
-    private val state = MutableStateFlow(CalculatorState())
+    private val _state = MutableStateFlow(CalculatorState())
+    val state: StateFlow<CalculatorState> = _state
 
     fun onClick(symbol: Symbol) {
         when (symbol) {
@@ -24,79 +27,73 @@ class BasicCalculatorViewModel : ViewModel() {
             Symbol.Divide -> changeOperator('/')
             Symbol.Multiply -> changeOperator('*')
             Symbol.Evaluate -> evaluate()
-            Symbol.DecimalPoint -> TODO()
-            Symbol.ToggleSign -> TODO()
-            Symbol.Zero -> TODO()
-            Symbol.One -> TODO()
-            Symbol.Two -> TODO()
-            Symbol.Three -> TODO()
-            Symbol.Four -> TODO()
-            Symbol.Five -> TODO()
-            Symbol.Six -> TODO()
-            Symbol.Seven -> TODO()
-            Symbol.Eight -> TODO()
-            Symbol.Nine -> TODO()
+            Symbol.DecimalPoint -> addDecimalPoint()
+            Symbol.ToggleSign -> toggleSign()
+            Symbol.Zero, Symbol.One, Symbol.Two, Symbol.Three,
+            Symbol.Four, Symbol.Five, Symbol.Six, Symbol.Seven,
+            Symbol.Eight, Symbol.Nine -> addDigit(symbol.getSymbol()[0])
         }
     }
 
     fun clearAll() {
-        state.update { CalculatorState() }
+        _state.update { CalculatorState() }
     }
 
     private fun clearInput() {
-        state.update({ currState ->
-            if (currState.currNumber != null) {
-                currState.currNumber = currState.prevNumber
-                currState.prevNumber = null
-            } else if (currState.operator != null) {
-                currState.operator = null
-                currState.currNumber = currState.prevNumber
-                currState.prevNumber = null
+        _state.update({ currState ->
+            val nextState = currState.copy()
+
+            if (nextState.currNumber != null) {
+                nextState.currNumber = nextState.prevNumber
+                nextState.prevNumber = null
+            } else if (nextState.operator != null) {
+                nextState.operator = null
+                nextState.currNumber = nextState.prevNumber
+                nextState.prevNumber = null
             }
-            currState.copy()
+
+            nextState
         })
     }
 
     private fun backspace() {
-        state.update({ currState ->
-            if (currState.currNumber != null) {
-                if (currState.currNumber?.backspace() == true) {
-                    currState.currNumber = currState.prevNumber
-                    currState.prevNumber = null
+        _state.update({ currState ->
+            val nextState = currState.copy()
+
+            if (nextState.currNumber != null) {
+                if (nextState.currNumber?.backspace() == true) {
+                    nextState.currNumber = nextState.prevNumber
+                    nextState.prevNumber = null
                 }
-            } else if (currState.operator != null) {
-                currState.operator = null
+            } else if (nextState.operator != null) {
+                nextState.operator = null
+                nextState.currNumber = nextState.prevNumber
+                nextState.prevNumber = null
             }
-            currState.copy()
+
+            nextState
         })
     }
 
     private fun changeOperator(operator: Char) {
-        state.update { currState ->
-            currState.operator = operator
-            if (currState.prevNumber == null) {
-                if (currState.currNumber == null) {
-                    currState.prevNumber = InputNumber()
-                } else {
-                    currState.prevNumber = currState.currNumber
-                    currState.currNumber = null
-                }
-            }
-            currState.copy()
+        _state.update { currState ->
+            currState.copy(operator = operator)
         }
     }
 
     private fun evaluate() {
-        state.update { currState ->
-            var left = currState.prevNumber?.toBigDecimal()
+        _state.update { currState ->
+            val nextState = currState.copy()
+
+            var left = nextState.prevNumber?.toBigDecimal()
             if (left == null) {
                 left = BigDecimal(0)
             }
-            var right = currState.currNumber?.toBigDecimal()
+            var right = nextState.currNumber?.toBigDecimal()
             if (right == null) {
                 right = BigDecimal(0)
             }
-            val result = when (currState.operator) {
+            val result = when (nextState.operator) {
                 '+' -> left.add(right)
                 '-' -> left.subtract(right)
                 '*' -> left.multiply(right)
@@ -104,18 +101,50 @@ class BasicCalculatorViewModel : ViewModel() {
                 else -> null
             }
             if (result != null) {
-                currState.prevNumber = null
-                currState.operator = null
-                currState.currNumber = InputNumber(result.toString())
+                nextState.prevNumber = null
+                nextState.operator = null
+                nextState.currNumber = InputNumber(result.toString())
             }
-            currState.copy()
+
+            nextState
         }
     }
 
     private fun addDecimalPoint() {
-        state.update { currState ->
-            currState.currNumber?.addDecimalPoint()
-            currState.copy()
+        _state.update { currState ->
+            val nextState = currState.copy()
+            if (nextState.currNumber == null) {
+                nextState.currNumber = InputNumber()
+            }
+            nextState.currNumber?.addDecimalPoint()
+            nextState
+        }
+    }
+
+    private fun toggleSign() {
+        _state.update { currState ->
+            val nextState = currState.copy()
+            nextState.currNumber?.toggleSign()
+            nextState
+        }
+    }
+
+    private fun addDigit(d: Char) {
+        _state.update { currState ->
+            val nextState = currState.copy()
+
+            if (nextState.operator != null && nextState.prevNumber == null) {
+                nextState.prevNumber = nextState.currNumber
+                nextState.currNumber = InputNumber()
+            }
+            if (nextState.currNumber == null) {
+                nextState.currNumber = InputNumber()
+            }
+            nextState.currNumber?.addDigit(d)
+
+            Log.d("D", nextState.toString())
+
+            nextState
         }
     }
 }

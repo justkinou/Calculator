@@ -1,6 +1,6 @@
 package com.example.calculator.core
 
-enum class Symbol(val symbol: String) {
+enum class Symbol(private val symbol: String) {
     Clear("C"),
     ClearAll("AC"),
     Backspace("←"),

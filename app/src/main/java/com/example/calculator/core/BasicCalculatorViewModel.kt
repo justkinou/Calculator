@@ -1,48 +1,75 @@
 package com.example.calculator.core
 
 import androidx.lifecycle.ViewModel
-import com.notkamui.keval.Keval
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import net.objecthunter.exp4j.ExpressionBuilder
 
 class BasicCalculatorViewModel : ViewModel() {
     private val expression = MutableStateFlow("")
     val expressionText: StateFlow<String> = expression
 
-    fun onClick(symbol: String) {
+    fun onClick(symbol: Symbol) {
         when (symbol) {
-            "AC", "C" -> {
+            Symbol.ClearAll -> {
                 expression.value = ""
             }
-            "=" -> {
+            Symbol.Clear -> {
+                expression.value = clear()
+            }
+            Symbol.Evaluate -> {
                 expression.value = evaluate()
             }
-            "±" -> {
+            Symbol.ToggleSign -> {
                 expression.value = toggleSign()
             }
+            Symbol.Backspace -> {
+                expression.value = backspace()
+            }
             else -> {
-                if (!"0123456789.".contains(symbol)) {
-                    expression.value += ' '
+                if (digits.contains(symbol) || symbol == Symbol.DecimalPoint) {
+                    val c = expression.value.getOrElse(expression.value.length - 1, { ' ' })
+                    if ("+-*/".contains(c)) {
+                        expression.value += ' '
+                    }
                 }
-                if ("-+/*".contains(expression.value.getOrElse(expression.value.length - 1, { ' ' }))) {
-                    expression.value += ' '
+                if (operators.contains(symbol)) {
+                    val c = expression.value.getOrElse(expression.value.length - 1, { ' ' })
+                    if ("01234567890".contains(c)) {
+                        expression.value += ' '
+                    }
                 }
-                expression.value += symbol
+                expression.value += symbol.getSymbol()
             }
         }
+    }
+
+    private fun clear(): String {
+        val expr = expression.value
+        var i = expr.length - 1
+        while (i >= 0 && expr[i] == ' ') {
+            --i
+        }
+        while (i >= 0 && expr[i] != ' ') {
+            --i;
+        }
+        while (i >= 0 && expr[i] == ' ') {
+            --i
+        }
+        return expr.substring(0, i + 1)
     }
 
     private fun toggleSign(): String {
         val expr = expression.value
         var i = expr.length - 1
-        while (i >= 0 && expr[i] < '0' && expr[i] > '9') {
+        while (i >= 0 && !"01234567890.".contains(expr[i])) {
             --i
         }
-        while (i >= 0 && expr[i] >= '0' && expr[i] <= '9') {
+        while (i >= 0 && "01234567890.".contains(expr[i])) {
             --i;
         }
         if (i == -1) {
-            if ("01234567890".contains(expr.getOrElse(0, { ' ' }))) {
+            if ("01234567890.".contains(expr.getOrElse(0) { ' ' })) {
                 return "-$expr"
             }
             return expr
@@ -54,6 +81,15 @@ class BasicCalculatorViewModel : ViewModel() {
     }
 
     private fun evaluate(): String {
-        return Keval.eval(expression.value).toString()
+        return ExpressionBuilder(expression.value).build().evaluate().toString()
+    }
+
+    private fun backspace(): String {
+        val expr = expression.value
+        var i = expr.length - 2
+        while (i >= 0 && expr[i] == ' ') {
+            --i
+        }
+        return expr.substring(0, i + 1)
     }
 }

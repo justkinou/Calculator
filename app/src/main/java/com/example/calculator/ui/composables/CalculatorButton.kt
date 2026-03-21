@@ -1,42 +1,27 @@
 package com.example.calculator.ui.composables
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.calculator.ui.theme.White
+import androidx.compose.ui.graphics.RectangleShape
 
 @Composable
 fun CalculatorButton(
-    symbol: String,
-    symbolColor: Color = White,
     backgroundColor: Color,
-    modifier: Modifier,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable() () -> Unit,
 ) {
     Button(
         onClick = onClick,
-        modifier = Modifier
-            .clip(RoundedCornerShape(100.dp))
-            .padding(5.dp)
-            .then(modifier),
-        shape = CircleShape,
+        modifier = modifier,
+        shape = RectangleShape,
         colors = ButtonDefaults.buttonColors(
             containerColor = backgroundColor,
         )
     ) {
-        Text(
-            symbol,
-            color = symbolColor,
-            fontSize = 24.sp,
-        )
+        content()
     }
 }

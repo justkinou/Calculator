@@ -1,6 +1,6 @@
 package com.example.calculator.core
 
-enum class BasicSymbol(val symbol: String) {
+enum class Symbol(private val symbol: String) {
     Clear("C"),
     ClearAll("AC"),
     Backspace("←"),
@@ -26,3 +26,23 @@ enum class BasicSymbol(val symbol: String) {
         return symbol
     }
 }
+
+val operators = listOf(
+    Symbol.Add,
+    Symbol.Subtract,
+    Symbol.Divide,
+    Symbol.Multiply,
+)
+
+val digits = listOf(
+    Symbol.Zero,
+    Symbol.One,
+    Symbol.Two,
+    Symbol.Three,
+    Symbol.Four,
+    Symbol.Five,
+    Symbol.Six,
+    Symbol.Seven,
+    Symbol.Eight,
+    Symbol.Nine,
+)

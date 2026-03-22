@@ -46,13 +46,13 @@ class BasicCalculatorViewModel : ViewModel() {
             var prevNumber = currState.prevNumber?.copy()
             var operator = currState.operator
 
-            if (currNumber != null) {
+            if (currNumber != null && prevNumber != null) {
                 currNumber = prevNumber
                 prevNumber = null
             } else if (operator != null) {
                 operator = null
-                currNumber = prevNumber
-                prevNumber = null
+            } else if (currNumber != null) {
+                currNumber = null
             }
 
             currState.copy(
@@ -91,7 +91,11 @@ class BasicCalculatorViewModel : ViewModel() {
 
     private fun changeOperator(operator: Char) {
         _state.update { currState ->
-            currState.copy(operator = operator)
+            var currNumber = currState.currNumber?.copy()
+            if (currNumber == null) {
+                currNumber = InputNumber()
+            }
+            currState.copy(operator = operator, currNumber = currNumber)
         }
     }
 

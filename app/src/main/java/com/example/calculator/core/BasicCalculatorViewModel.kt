@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.update
 import java.math.BigDecimal
 
 data class CalculatorState(
-    var prevNumber: InputNumber? = null,
-    var currNumber: InputNumber? = null,
-    var operator: Char? = null,
+    val prevNumber: InputNumber? = null,
+    val currNumber: InputNumber? = null,
+    val operator: Char? = null,
 )
 
 class BasicCalculatorViewModel : ViewModel() {
@@ -40,39 +40,53 @@ class BasicCalculatorViewModel : ViewModel() {
     }
 
     private fun clearInput() {
-        _state.update({ currState ->
-            val nextState = currState.copy()
+        _state.update { currState ->
+            var currNumber = currState.currNumber?.copy()
+            var prevNumber = currState.prevNumber?.copy()
+            var operator = currState.operator
 
-            if (nextState.currNumber != null) {
-                nextState.currNumber = nextState.prevNumber
-                nextState.prevNumber = null
-            } else if (nextState.operator != null) {
-                nextState.operator = null
-                nextState.currNumber = nextState.prevNumber
-                nextState.prevNumber = null
+            if (currNumber != null) {
+                currNumber = prevNumber
+                prevNumber = null
+                operator = null
+            } else if (operator != null) {
+                operator = null
+                currNumber = prevNumber
+                prevNumber = null
             }
 
-            nextState
-        })
+            currState.copy(
+                prevNumber = prevNumber,
+                currNumber = currNumber,
+                operator = operator,
+            )
+        }
     }
 
     private fun backspace() {
-        _state.update({ currState ->
-            val nextState = currState.copy()
+        _state.update { currState ->
+            var currNumber = currState.currNumber?.copy()
+            var prevNumber = currState.prevNumber?.copy()
+            var operator = currState.operator
 
-            if (nextState.currNumber != null) {
-                if (nextState.currNumber?.backspace() == true) {
-                    nextState.currNumber = nextState.prevNumber
-                    nextState.prevNumber = null
+            if (currNumber != null) {
+                if (currNumber.backspace()) {
+                    currNumber = prevNumber
+                    prevNumber = null
+                    operator = null
                 }
-            } else if (nextState.operator != null) {
-                nextState.operator = null
-                nextState.currNumber = nextState.prevNumber
-                nextState.prevNumber = null
+            } else if (operator != null) {
+                operator = null
+                currNumber = prevNumber
+                prevNumber = null
             }
 
-            nextState
-        })
+            currState.copy(
+                prevNumber = prevNumber,
+                currNumber = currNumber,
+                operator = operator,
+            )
+        }
     }
 
     private fun changeOperator(operator: Char) {
@@ -83,68 +97,75 @@ class BasicCalculatorViewModel : ViewModel() {
 
     private fun evaluate() {
         _state.update { currState ->
-            val nextState = currState.copy()
+            var prevNumber = currState.prevNumber?.copy()
+            var currNumber = currState.currNumber?.copy()
+            var operator = currState.operator
 
-            var left = nextState.prevNumber?.toBigDecimal()
-            if (left == null) {
-                left = BigDecimal(0)
-            }
-            var right = nextState.currNumber?.toBigDecimal()
-            if (right == null) {
-                right = BigDecimal(0)
-            }
-            val result = when (nextState.operator) {
+            val left = prevNumber?.toBigDecimal() ?: BigDecimal.ZERO
+            val right = currNumber?.toBigDecimal() ?: BigDecimal.ZERO
+            val result = when (operator) {
                 '+' -> left.add(right)
                 '-' -> left.subtract(right)
                 '*' -> left.multiply(right)
                 '/' -> left.divide(right)
                 else -> null
             }
+
             if (result != null) {
-                nextState.prevNumber = null
-                nextState.operator = null
-                nextState.currNumber = InputNumber(result.toString())
+                prevNumber = null
+                operator = null
+                currNumber = InputNumber(result.toString())
             }
 
-            nextState
+            currState.copy(
+                prevNumber = prevNumber,
+                currNumber = currNumber,
+                operator = operator,
+            )
         }
     }
 
     private fun addDecimalPoint() {
         _state.update { currState ->
-            val nextState = currState.copy()
-            if (nextState.currNumber == null) {
-                nextState.currNumber = InputNumber()
-            }
-            nextState.currNumber?.addDecimalPoint()
-            nextState
+            var currNumber = currState.currNumber?.copy() ?: InputNumber()
+            currNumber.addDecimalPoint()
+
+            currState.copy(
+                currNumber = currNumber
+            )
         }
     }
 
     private fun toggleSign() {
         _state.update { currState ->
-            val nextState = currState.copy()
-            nextState.currNumber?.toggleSign()
-            nextState
+            var currNumber = currState.currNumber?.copy()
+            currNumber?.toggleSign()
+            currState.copy(
+                currNumber = currNumber
+            )
         }
     }
 
     private fun addDigit(d: Char) {
         _state.update { currState ->
-            val nextState = currState.copy()
+            var prevNumber = currState.prevNumber?.copy()
+            var currNumber = currState.currNumber?.copy()
+            var operator = currState.operator
 
-            if (nextState.operator != null && nextState.prevNumber == null) {
-                nextState.prevNumber = nextState.currNumber
-                nextState.currNumber = InputNumber()
+            if (operator != null && prevNumber == null) {
+                prevNumber = currNumber
+                currNumber = InputNumber()
             }
-            if (nextState.currNumber == null) {
-                nextState.currNumber = InputNumber()
+            if (currNumber == null) {
+                currNumber = InputNumber()
             }
-            nextState.currNumber?.addDigit(d)
+            currNumber.addDigit(d)
 
-            Log.d("D", nextState.toString())
-
-            nextState
+            currState.copy(
+                prevNumber = prevNumber,
+                currNumber = currNumber,
+                operator = operator,
+            )
         }
     }
 }

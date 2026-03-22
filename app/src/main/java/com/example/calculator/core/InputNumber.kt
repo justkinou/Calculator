@@ -68,4 +68,8 @@ class InputNumber {
     fun toBigDecimal(): BigDecimal {
         return BigDecimal(toString())
     }
+
+    fun copy(): InputNumber {
+        return InputNumber(toString())
+    }
 }

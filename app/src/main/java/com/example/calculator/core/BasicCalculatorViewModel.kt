@@ -111,7 +111,12 @@ class BasicCalculatorViewModel : ViewModel() {
                 '+' -> left.add(right)
                 '-' -> left.subtract(right)
                 '*' -> left.multiply(right)
-                '/' -> left.divide(right, 12, RoundingMode.HALF_UP).stripTrailingZeros()
+                '/' -> {
+                    if (right.compareTo(BigDecimal(0)) == 0) {
+                        throw IllegalArgumentException("Division by zero")
+                    }
+                    left.divide(right, 12, RoundingMode.HALF_UP).stripTrailingZeros()
+                }
                 else -> return
             }
 

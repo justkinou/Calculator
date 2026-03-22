@@ -28,7 +28,7 @@ import com.example.calculator.ui.theme.QuickSilver
 
 @Composable
 fun BasicCalculator(
-    calculatorViewModel: BasicCalculatorViewModel = BasicCalculatorViewModel()
+    calculatorViewModel: BasicCalculatorViewModel = viewModel<BasicCalculatorViewModel>()
 ) {
     val configuration = LocalConfiguration.current
 

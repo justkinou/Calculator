@@ -85,7 +85,7 @@ fun NumPad(
                             } catch (e: Exception) {
                                 Toast.makeText(
                                     context,
-                                    "Failed to evaluate expression",
+                                    "Failed: ${e.message}",
                                     Toast.LENGTH_SHORT,
                                 ).show()
                             }

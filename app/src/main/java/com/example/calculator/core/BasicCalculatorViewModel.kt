@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 data class CalculatorState(
     val prevNumber: InputNumber? = null,
@@ -48,7 +49,6 @@ class BasicCalculatorViewModel : ViewModel() {
             if (currNumber != null) {
                 currNumber = prevNumber
                 prevNumber = null
-                operator = null
             } else if (operator != null) {
                 operator = null
                 currNumber = prevNumber
@@ -107,8 +107,8 @@ class BasicCalculatorViewModel : ViewModel() {
                 '+' -> left.add(right)
                 '-' -> left.subtract(right)
                 '*' -> left.multiply(right)
-                '/' -> left.divide(right)
-                else -> null
+                '/' -> left.divide(right, 12, RoundingMode.HALF_UP).stripTrailingZeros()
+                else -> return
             }
 
             if (result != null) {

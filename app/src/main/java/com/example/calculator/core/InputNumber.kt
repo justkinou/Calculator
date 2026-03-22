@@ -1,5 +1,6 @@
 package com.example.calculator.core
 
+import android.util.Log
 import java.math.BigDecimal
 
 class InputNumber {
@@ -39,7 +40,9 @@ class InputNumber {
         if (isBlank()) {
             return true
         }
+        Log.d("test", "$number")
         number.deleteAt(number.length - 1)
+        Log.d("test", "$number")
         if (number.isEmpty()) {
             number.append('0')
         }
@@ -58,11 +61,7 @@ class InputNumber {
     }
 
     override fun toString(): String {
-        var res = number.toString()
-        if (number.getOrElse(number.length - 1, { ' ' }) == '.') {
-            res += "0"
-        }
-        return res
+        return number.toString()
     }
 
     fun toBigDecimal(): BigDecimal {

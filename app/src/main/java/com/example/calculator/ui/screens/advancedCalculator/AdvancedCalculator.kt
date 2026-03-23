@@ -1,14 +1,12 @@
-package com.example.calculator.ui.screens.basicCalculator
+package com.example.calculator.ui.screens.advancedCalculator
 
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Scaffold
@@ -20,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.calculator.core.CalculatorViewModel
@@ -29,7 +26,7 @@ import com.example.calculator.ui.composables.NumPad
 import com.example.calculator.ui.theme.Carbon
 
 @Composable
-fun BasicCalculator(
+fun AdvancedCalculator(
     calculatorViewModel: CalculatorViewModel = viewModel<CalculatorViewModel>()
 ) {
     val configuration = LocalConfiguration.current
@@ -61,38 +58,38 @@ fun BasicCalculator(
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) {
-        padding -> Column(
+            padding -> Column(
+        modifier = Modifier
+            .padding(padding)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Row(
             modifier = Modifier
-                .padding(padding)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween,
+                .fillMaxWidth()
+                .horizontalScroll(expressionScrollState)
+                .weight(1f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
         ) {
-            Row(
+            Text(
+                text = expression.value,
+                fontSize = 32.sp,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(expressionScrollState)
-                    .weight(1f),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End,
-            ) {
-                Text(
-                    text = expression.value,
-                    fontSize = 32.sp,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    color = Carbon,
-                    textAlign = TextAlign.Right,
-                )
-            }
-
-            NumPad(
-                cols = cols,
-                symbols = numPadSymbols,
-                onClick = calculatorViewModel::onClick,
-                onDoubleClick = calculatorViewModel::clearAll,
-                modifier = Modifier
-                    .weight(4f),
+                    .fillMaxWidth(),
+                color = Carbon,
+                textAlign = TextAlign.Right,
             )
         }
+
+        NumPad(
+            cols = cols,
+            symbols = numPadSymbols,
+            onClick = calculatorViewModel::onClick,
+            onDoubleClick = calculatorViewModel::clearAll,
+            modifier = Modifier
+                .weight(4f),
+        )
+    }
     }
 }

@@ -2,16 +2,23 @@ package com.example.calculator.ui.composables
 
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import android.widget.Toast
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
@@ -50,6 +57,7 @@ fun NumPad(
     symbols: List<Symbol>,
     modifier: Modifier = Modifier,
     onClick: (Symbol) -> Unit,
+    onDoubleClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
@@ -74,28 +82,54 @@ fun NumPad(
                     val symbolColor = colors[1]
                     val backgroundColor = colors[0]
                     val symbol = symbols[i * cols + j]
-                    CalculatorButton(
-                        backgroundColor = backgroundColor,
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f),
-                        onClick = {
-                            try {
-                                onClick(symbol)
-                            } catch (e: Exception) {
-                                Toast.makeText(
-                                    context,
-                                    "Failed: ${e.message}",
-                                    Toast.LENGTH_SHORT,
-                                ).show()
+
+                    when (symbol) {
+                        Symbol.Clear -> {
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(1f)
+                                    .combinedClickable(
+                                        onClick = { onClick(symbol) },
+                                        onDoubleClick = onDoubleClick,
+                                    ),
+                                shape = RectangleShape,
+                                color = backgroundColor,
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        symbol.getSymbol(),
+                                        color = symbolColor,
+                                        fontSize = 24.sp,
+                                    )
+                                }
                             }
                         }
-                    ) {
-                        Text(
-                            symbol.getSymbol(),
-                            color = symbolColor,
-                            fontSize = 24.sp,
-                        )
+                        else -> {
+                            CalculatorButton(
+                                backgroundColor = backgroundColor,
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(1f),
+                                onClick = {
+                                    try {
+                                        onClick(symbol)
+                                    } catch (e: Exception) {
+                                        Toast.makeText(
+                                            context,
+                                            "Failed: ${e.message}",
+                                            Toast.LENGTH_SHORT,
+                                        ).show()
+                                    }
+                                },
+                            ) {
+                                Text(
+                                    symbol.getSymbol(),
+                                    color = symbolColor,
+                                    fontSize = 24.sp,
+                                )
+                            }
+                        }
                     }
                 }
             }

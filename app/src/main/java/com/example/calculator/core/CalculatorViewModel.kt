@@ -14,9 +14,7 @@ open class CalculatorViewModel : ViewModel() {
 
     fun onClick(symbol: Symbol) {
         when (symbol) {
-            Symbol.ClearAll -> {
-                expression.value = ""
-            }
+            Symbol.ClearAll -> clearAll()
             Symbol.Clear -> {
                 expression.value = clear()
             }
@@ -45,6 +43,10 @@ open class CalculatorViewModel : ViewModel() {
                 expression.value += symbol.getSymbol()
             }
         }
+    }
+
+    fun clearAll() {
+        expression.value = ""
     }
 
     private fun clear(): String {
@@ -89,6 +91,9 @@ open class CalculatorViewModel : ViewModel() {
 
     private fun backspace(): String {
         val expr = expression.value
+        if (expr.isEmpty()) {
+            return ""
+        }
         var i = expr.length - 2
         while (i >= 0 && expr[i] == ' ') {
             --i

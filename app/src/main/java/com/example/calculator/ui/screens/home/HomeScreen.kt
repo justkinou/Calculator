@@ -70,7 +70,7 @@ fun HomeScreen(
 
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { navController.navigate(Routes.BASIC_CALCULATOR) },
+                    onClick = { navController.navigate(Routes.ADVANCED_CALCULATOR) },
                 ) {
                     Text(
                         "Advanced Calculator",

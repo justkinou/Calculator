@@ -1,5 +1,6 @@
 package com.example.calculator.ui.composables
 
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
@@ -15,12 +16,12 @@ fun CalculatorButton(
     content: @Composable() () -> Unit,
 ) {
     Button(
-        onClick = onClick,
         modifier = modifier,
         shape = RectangleShape,
         colors = ButtonDefaults.buttonColors(
             containerColor = backgroundColor,
-        )
+        ),
+        onClick = onClick,
     ) {
         content()
     }

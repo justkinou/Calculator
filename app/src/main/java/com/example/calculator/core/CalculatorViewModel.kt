@@ -28,13 +28,20 @@ open class CalculatorViewModel : ViewModel() {
                 expression.value = backspace()
             }
             else -> {
+                if (functions.contains(symbol)) {
+                    val c = expression.value.getOrElse(expression.value.length - 1, { ' ' })
+                    if ("01234567890.)".contains(c)) {
+                        expression.value += " * "
+                    }
+                    expression.value += symbol.getSymbol() + "("
+                    return
+                }
                 if (digits.contains(symbol) || symbol == Symbol.DecimalPoint) {
                     val c = expression.value.getOrElse(expression.value.length - 1, { ' ' })
                     if ("+-*/".contains(c)) {
                         expression.value += ' '
                     }
-                }
-                if (operators.contains(symbol)) {
+                } else if (operators.contains(symbol)) {
                     val c = expression.value.getOrElse(expression.value.length - 1, { ' ' })
                     if ("01234567890".contains(c)) {
                         expression.value += ' '
@@ -45,7 +52,7 @@ open class CalculatorViewModel : ViewModel() {
         }
     }
 
-    fun clearAll() {
+    private fun clearAll() {
         expression.value = ""
     }
 

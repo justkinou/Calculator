@@ -29,107 +29,54 @@ import com.example.calculator.ui.theme.QuickSilver
 import com.example.calculator.ui.theme.VitaminC
 import com.example.calculator.ui.theme.White
 
-private fun getColorsPortrait(i: Int, j: Int, cols: Int): List<Color> {
-    val res = mutableListOf(Carbon, White)
-    if (j == cols - 1) {
-        res[0] = VitaminC
-    } else if (i == 0) {
-        res[0] = QuickSilver
-        res[1] = Black
-    }
-    return res
-}
-
-private fun getColorsLandscape(i: Int, j: Int, cols: Int): List<Color> {
-    val res = mutableListOf(Carbon, White)
-    if (j == cols - 1) {
-        res[0] = VitaminC
-    } else if (j > 2) {
-        res[0] = QuickSilver
-        res[1] = Black
-    }
-    return res
-}
-
 @Composable
 fun NumPad(
     cols: Int,
-    symbols: List<Symbol>,
+    symbols: List<List<Symbol>>,
     modifier: Modifier = Modifier,
     onClick: (Symbol) -> Unit,
-    onDoubleClick: () -> Unit,
+    getColors: (Int, Int, Int) -> List<Color>
 ) {
     val context = LocalContext.current
-    val configuration = LocalConfiguration.current
-    var getColors = ::getColorsPortrait
-    if (configuration.orientation != ORIENTATION_PORTRAIT) {
-        getColors = ::getColorsLandscape
-    }
-    val rows = symbols.size / cols
 
     Column(
         modifier = modifier
     ) {
-        repeat (rows) { i ->
+        repeat (symbols.size) { i ->
             Row(
                 Modifier
                     .height(IntrinsicSize.Max)
                     .weight(1f)
                     .fillMaxWidth()
             ) {
-                for (j in 0 until cols) {
+                for (j in 0 until symbols[i].size) {
                     val colors = getColors(i, j, cols)
                     val symbolColor = colors[1]
                     val backgroundColor = colors[0]
-                    val symbol = symbols[i * cols + j]
+                    val symbol = symbols[i][j]
 
-                    when (symbol) {
-                        Symbol.Clear -> {
-                            Surface(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .weight(1f)
-                                    .combinedClickable(
-                                        onClick = { onClick(symbol) },
-                                        onDoubleClick = onDoubleClick,
-                                    ),
-                                shape = RectangleShape,
-                                color = backgroundColor,
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Text(
-                                        symbol.getSymbol(),
-                                        color = symbolColor,
-                                        fontSize = 24.sp,
-                                    )
-                                }
+                    CalculatorButton(
+                        backgroundColor = backgroundColor,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .weight(1f),
+                        onClick = {
+                            try {
+                                onClick(symbol)
+                            } catch (e: Exception) {
+                                Toast.makeText(
+                                    context,
+                                    "Failed: ${e.message}",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                             }
-                        }
-                        else -> {
-                            CalculatorButton(
-                                backgroundColor = backgroundColor,
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .weight(1f),
-                                onClick = {
-                                    try {
-                                        onClick(symbol)
-                                    } catch (e: Exception) {
-                                        Toast.makeText(
-                                            context,
-                                            "Failed: ${e.message}",
-                                            Toast.LENGTH_SHORT,
-                                        ).show()
-                                    }
-                                },
-                            ) {
-                                Text(
-                                    symbol.getSymbol(),
-                                    color = symbolColor,
-                                    fontSize = 24.sp,
-                                )
-                            }
-                        }
+                        },
+                    ) {
+                        Text(
+                            symbol.getSymbol(),
+                            color = symbolColor,
+                            fontSize = 20.sp,
+                        )
                     }
                 }
             }

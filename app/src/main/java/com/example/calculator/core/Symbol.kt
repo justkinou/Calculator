@@ -3,8 +3,7 @@ package com.example.calculator.core
 enum class Symbol(private val symbol: String) {
     Clear("C"),
     ClearAll("AC"),
-    OpenBrace("("),
-    CloseBrace(")"),
+    Braces("()"),
     Backspace("←"),
     Add("+"),
     Subtract("-"),
@@ -29,10 +28,9 @@ enum class Symbol(private val symbol: String) {
     CommonLogarithm("log"),
     NaturalLogarithm("ln"),
     Percent("%"),
-    SquareRoot("√"),
+    SquareRoot("sqrt"),
     Square("^2"),
     Power("^");
-
     fun getSymbol(): String {
         return symbol
     }
@@ -56,4 +54,9 @@ val digits = listOf(
     Symbol.Seven,
     Symbol.Eight,
     Symbol.Nine,
+)
+
+val functions = listOf(
+    Symbol.Sines, Symbol.Cosines, Symbol.Tangent,
+    Symbol.CommonLogarithm, Symbol.NaturalLogarithm, Symbol.SquareRoot
 )

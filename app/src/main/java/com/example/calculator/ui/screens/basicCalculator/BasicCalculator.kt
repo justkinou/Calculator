@@ -4,9 +4,11 @@ import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Scaffold
@@ -21,23 +23,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.calculator.core.BasicCalculatorViewModel
+import com.example.calculator.core.CalculatorViewModel
 import com.example.calculator.core.Symbol
 import com.example.calculator.ui.composables.NumPad
-import com.example.calculator.ui.theme.QuickSilver
+import com.example.calculator.ui.theme.Carbon
 
 @Composable
 fun BasicCalculator(
-    calculatorViewModel: BasicCalculatorViewModel = viewModel<BasicCalculatorViewModel>()
+    calculatorViewModel: CalculatorViewModel = viewModel<CalculatorViewModel>()
 ) {
     val configuration = LocalConfiguration.current
 
-    val state = calculatorViewModel.state.collectAsState()
-    val currNumberScrollState = rememberScrollState()
-    val prevNumberScrollState = rememberScrollState()
+    val expression = calculatorViewModel.expressionText.collectAsState()
+    val expressionScrollState = rememberScrollState()
 
-    LaunchedEffect(state.value.currNumber) {
-        currNumberScrollState.animateScrollTo(currNumberScrollState.maxValue)
+    LaunchedEffect(expression.value) {
+        expressionScrollState.animateScrollTo(expressionScrollState.maxValue)
     }
 
     var cols = 4
@@ -66,41 +67,20 @@ fun BasicCalculator(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            Column(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp),
-                horizontalAlignment = Alignment.End,
+                    .horizontalScroll(expressionScrollState)
+                    .weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = state.value.prevNumber?.toString() ?: "",
-                        fontSize = 20.sp,
-                        modifier = Modifier
-                            .horizontalScroll(prevNumberScrollState)
-                            .weight(5f),
-                        color = QuickSilver
-                    )
-
-                    Text(
-                        text = state.value.operator?.toString() ?: "",
-                        fontSize = 20.sp,
-                        modifier = Modifier
-                            .weight(1f),
-                        color = QuickSilver,
-                        textAlign = TextAlign.Right,
-                    )
-                }
-
                 Text(
-                    text = state.value.currNumber?.toString() ?: "0",
+                    text = expression.value,
                     fontSize = 32.sp,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(currNumberScrollState),
+                        .fillMaxWidth(),
+                    color = Carbon,
                     textAlign = TextAlign.Right,
                 )
             }
@@ -109,6 +89,8 @@ fun BasicCalculator(
                 cols = cols,
                 symbols = numPadSymbols,
                 onClick = calculatorViewModel::onClick,
+                modifier = Modifier
+                    .weight(4f),
             )
         }
     }

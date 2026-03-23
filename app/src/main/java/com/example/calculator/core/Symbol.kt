@@ -3,6 +3,8 @@ package com.example.calculator.core
 enum class Symbol(private val symbol: String) {
     Clear("C"),
     ClearAll("AC"),
+    OpenBrace("("),
+    CloseBrace(")"),
     Backspace("←"),
     Add("+"),
     Subtract("-"),
@@ -20,7 +22,16 @@ enum class Symbol(private val symbol: String) {
     Six("6"),
     Seven("7"),
     Eight("8"),
-    Nine("9");
+    Nine("9"),
+    Sines("sin"),
+    Cosines("cos"),
+    Tangent("tan"),
+    CommonLogarithm("log"),
+    NaturalLogarithm("ln"),
+    Percent("%"),
+    SquareRoot("√"),
+    Square("^2"),
+    Power("^");
 
     fun getSymbol(): String {
         return symbol

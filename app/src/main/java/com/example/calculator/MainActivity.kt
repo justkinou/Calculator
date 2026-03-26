@@ -4,12 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.calculator.core.BasicCalculatorViewModel
 import com.example.calculator.ui.screens.about.AboutScreen
 import com.example.calculator.ui.screens.basicCalculator.BasicCalculator
 import com.example.calculator.ui.screens.home.HomeScreen

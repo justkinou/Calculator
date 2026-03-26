@@ -21,23 +21,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.calculator.core.BasicCalculatorViewModel
+import com.example.calculator.core.CalculatorViewModel
 import com.example.calculator.core.Symbol
 import com.example.calculator.ui.composables.NumPad
-import com.example.calculator.ui.theme.QuickSilver
 
 @Composable
 fun BasicCalculator(
-    calculatorViewModel: BasicCalculatorViewModel = viewModel<BasicCalculatorViewModel>()
+    calculatorViewModel: CalculatorViewModel = viewModel<CalculatorViewModel>()
 ) {
     val configuration = LocalConfiguration.current
 
     val state = calculatorViewModel.state.collectAsState()
     val currNumberScrollState = rememberScrollState()
-    val prevNumberScrollState = rememberScrollState()
+    val expressionScrollState = rememberScrollState()
 
     LaunchedEffect(state.value.currNumber) {
         currNumberScrollState.animateScrollTo(currNumberScrollState.maxValue)
+    }
+
+    LaunchedEffect(state.value.numberStack, state.value.operatorStack) {
+        expressionScrollState.animateScrollTo(expressionScrollState.maxValue)
     }
 
     var cols = 4
@@ -77,26 +80,15 @@ fun BasicCalculator(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = state.value.prevNumber?.toString() ?: "",
+                        text = calculatorViewModel.toString(),
                         fontSize = 20.sp,
                         modifier = Modifier
-                            .horizontalScroll(prevNumberScrollState)
-                            .weight(5f),
-                        color = QuickSilver
-                    )
-
-                    Text(
-                        text = state.value.operator?.toString() ?: "",
-                        fontSize = 20.sp,
-                        modifier = Modifier
-                            .weight(1f),
-                        color = QuickSilver,
-                        textAlign = TextAlign.Right,
+                            .horizontalScroll(expressionScrollState)
                     )
                 }
 
                 Text(
-                    text = state.value.currNumber?.toString() ?: "0",
+                    text = state.value.currNumber.toString(),
                     fontSize = 32.sp,
                     modifier = Modifier
                         .fillMaxWidth()

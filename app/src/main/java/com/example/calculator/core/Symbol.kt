@@ -20,7 +20,16 @@ enum class Symbol(private val symbol: String) {
     Six("6"),
     Seven("7"),
     Eight("8"),
-    Nine("9");
+    Nine("9"),
+    Sines("sin"),
+    Cosines("cos"),
+    Tangent("tan"),
+    CommonLogarithm("log"),
+    NaturalLogarithm("ln"),
+    Percent("%"),
+    SquareRoot("√"),
+    Square("^2"),
+    Power("^");
 
     fun getSymbol(): String {
         return symbol
@@ -45,4 +54,9 @@ val digits = listOf(
     Symbol.Seven,
     Symbol.Eight,
     Symbol.Nine,
+)
+
+val functions = listOf(
+    Symbol.Sines, Symbol.Cosines, Symbol.Tangent,
+    Symbol.CommonLogarithm, Symbol.NaturalLogarithm, Symbol.SquareRoot
 )

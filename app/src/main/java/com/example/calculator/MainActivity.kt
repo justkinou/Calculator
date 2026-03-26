@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.calculator.ui.screens.about.AboutScreen
+import com.example.calculator.ui.screens.advancedCalculator.AdvancedCalculator
 import com.example.calculator.ui.screens.basicCalculator.BasicCalculator
 import com.example.calculator.ui.screens.home.HomeScreen
 import com.example.calculator.ui.theme.CalculatorTheme
@@ -41,6 +42,10 @@ class MainActivity : ComponentActivity() {
 
                     composable(Routes.BASIC_CALCULATOR) {
                         BasicCalculator()
+                    }
+
+                    composable(Routes.ADVANCED_CALCULATOR) {
+                        AdvancedCalculator()
                     }
                 }
             }

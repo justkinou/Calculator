@@ -35,6 +35,79 @@ class CalculatorViewModel : ViewModel() {
             Symbol.Zero, Symbol.One, Symbol.Two, Symbol.Three,
             Symbol.Four, Symbol.Five, Symbol.Six, Symbol.Seven,
             Symbol.Eight, Symbol.Nine -> addDigit(symbol.getSymbol()[0])
+            Symbol.Power -> changeOperator('^')
+            Symbol.Sines -> {
+                _state.update { currState ->
+                    val currNumber = currState.currNumber.copy()
+                    currNumber.sin()
+                    currState.copy(
+                        currNumber = currNumber
+                    )
+                }
+            }
+            Symbol.Cosines -> {
+                _state.update { currState ->
+                    val currNumber = currState.currNumber.copy()
+                    currNumber.cos()
+                    currState.copy(
+                        currNumber = currNumber
+                    )
+                }
+            }
+            Symbol.Tangent -> {
+                _state.update { currState ->
+                    val currNumber = currState.currNumber.copy()
+                    currNumber.tan()
+                    currState.copy(
+                        currNumber = currNumber
+                    )
+                }
+            }
+            Symbol.NaturalLogarithm -> {
+                _state.update { currState ->
+                    val currNumber = currState.currNumber.copy()
+                    currNumber.ln()
+                    currState.copy(
+                        currNumber = currNumber
+                    )
+                }
+            }
+            Symbol.CommonLogarithm -> {
+                _state.update { currState ->
+                    val currNumber = currState.currNumber.copy()
+                    currNumber.log()
+                    currState.copy(
+                        currNumber = currNumber
+                    )
+                }
+            }
+            Symbol.Square -> {
+                _state.update { currState ->
+                    val currNumber = currState.currNumber.copy()
+                    currNumber.pow2()
+                    currState.copy(
+                        currNumber = currNumber
+                    )
+                }
+            }
+            Symbol.SquareRoot -> {
+                _state.update { currState ->
+                    val currNumber = currState.currNumber.copy()
+                    currNumber.sqrt()
+                    currState.copy(
+                        currNumber = currNumber
+                    )
+                }
+            }
+            Symbol.Percent -> {
+                _state.update { currState ->
+                    val currNumber = currState.currNumber.copy()
+                    currNumber.percent()
+                    currState.copy(
+                        currNumber = currNumber
+                    )
+                }
+            }
         }
     }
 

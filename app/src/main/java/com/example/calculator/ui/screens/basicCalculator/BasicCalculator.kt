@@ -1,7 +1,6 @@
 package com.example.calculator.ui.screens.basicCalculator
 
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
-import android.widget.Toast
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,7 +35,6 @@ import com.example.calculator.ui.theme.White
 fun BasicCalculator(
     calculatorViewModel: CalculatorViewModel = viewModel<CalculatorViewModel>()
 ) {
-    val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val state = calculatorViewModel.state.collectAsState()
     val currNumberScrollState = rememberScrollState()
@@ -121,15 +118,7 @@ fun BasicCalculator(
                             CalculatorButton(
                                 backgroundColor = backgroundColor,
                                 onClick = {
-                                    try {
-                                        calculatorViewModel.onClick(symbol)
-                                    } catch (e: Exception) {
-                                        Toast.makeText(
-                                            context,
-                                            "Failed: ${e.message}",
-                                            Toast.LENGTH_SHORT,
-                                        ).show()
-                                    }
+                                    calculatorViewModel.onClick(symbol)
                                 },
                                 modifier = Modifier
                                     .fillMaxHeight()

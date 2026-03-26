@@ -1,6 +1,5 @@
-package com.example.calculator.ui.screens.advancedCalculator
+package com.example.calculator.ui.screens.basicCalculator
 
-import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,11 +31,9 @@ import com.example.calculator.ui.theme.VitaminC
 import com.example.calculator.ui.theme.White
 
 @Composable
-fun AdvancedCalculator(
+fun AdvancedCalculatorPortrait(
     calculatorViewModel: CalculatorViewModel = viewModel<CalculatorViewModel>()
 ) {
-    val configuration = LocalConfiguration.current
-
     val state = calculatorViewModel.state.collectAsState()
     val currNumberScrollState = rememberScrollState()
     val expressionScrollState = rememberScrollState()
@@ -68,7 +65,7 @@ fun AdvancedCalculator(
                 ) {
                     Text(
                         text = calculatorViewModel.toString(),
-                        fontSize = if (configuration.orientation == ORIENTATION_PORTRAIT) 20.sp else 16.sp,
+                        fontSize = 20.sp,
                         modifier = Modifier
                             .horizontalScroll(expressionScrollState),
                         color = QuickSilver,
@@ -77,7 +74,7 @@ fun AdvancedCalculator(
 
                 Text(
                     text = state.value.currNumber.toString(),
-                    fontSize = if (configuration.orientation == ORIENTATION_PORTRAIT) 32.sp else 20.sp,
+                    fontSize = 32.sp,
                     modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(currNumberScrollState),

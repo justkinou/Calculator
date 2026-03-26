@@ -2,6 +2,9 @@ package com.example.calculator.core
 
 import android.util.Log
 import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
+import kotlin.math.log10
 
 class InputNumber {
     private var number = StringBuilder("0")
@@ -70,5 +73,65 @@ class InputNumber {
 
     fun copy(): InputNumber {
         return InputNumber(toString())
+    }
+
+    fun sin() {
+        val raw = BigDecimal(kotlin.math.sin(toBigDecimal().toDouble()))
+        val scaled = raw.setScale(8, RoundingMode.HALF_UP)
+        number = StringBuilder(scaled.stripTrailingZeros().toPlainString())
+    }
+
+    fun cos() {
+        val raw = BigDecimal(kotlin.math.cos(toBigDecimal().toDouble()))
+        val scaled = raw.setScale(8, RoundingMode.HALF_UP)
+        number = StringBuilder(scaled.stripTrailingZeros().toPlainString())
+    }
+
+    fun tan() {
+        val radians = toBigDecimal().toDouble()
+        if (kotlin.math.cos(radians) == 0.0) {
+            throw ArithmeticException("tan undefined at this value")
+        }
+        val raw = BigDecimal(kotlin.math.tan(radians))
+        val scaled = raw.setScale(8, RoundingMode.HALF_UP)
+        number = StringBuilder(scaled.stripTrailingZeros().toPlainString())
+    }
+
+    fun log() {
+        if (toBigDecimal() <= BigDecimal.ZERO) {
+            throw ArithmeticException("log undefined for x ≤ 0")
+        }
+        val raw = BigDecimal(log10(toBigDecimal().toDouble()))
+        val scaled = raw.setScale(8, RoundingMode.HALF_UP)
+        number = StringBuilder(scaled.stripTrailingZeros().toPlainString())
+    }
+
+    fun ln() {
+        if (toBigDecimal() <= BigDecimal.ZERO) {
+            throw ArithmeticException("ln undefined for x ≤ 0")
+        }
+        val raw = BigDecimal(kotlin.math.ln(toBigDecimal().toDouble()))
+        val scaled = raw.setScale(8, RoundingMode.HALF_UP)
+        number = StringBuilder(scaled.stripTrailingZeros().toPlainString())
+    }
+
+    fun sqrt() {
+        if (toBigDecimal() < BigDecimal.ZERO) {
+            throw ArithmeticException("sqrt undefined for x < 0")
+        }
+        val raw = BigDecimal(kotlin.math.sqrt(toBigDecimal().toDouble()))
+        val scaled = raw.setScale(8, RoundingMode.HALF_UP)
+        number = StringBuilder(scaled.stripTrailingZeros().toPlainString())
+    }
+
+    fun pow2() {
+        val raw = toBigDecimal().pow(2)
+        val scaled = raw.setScale(8, RoundingMode.HALF_UP)
+        number = StringBuilder(scaled.stripTrailingZeros().toPlainString())
+    }
+
+    fun percent() {
+        val raw = toBigDecimal().divide(BigDecimal(100))
+        number = StringBuilder(raw.stripTrailingZeros().toPlainString())
     }
 }

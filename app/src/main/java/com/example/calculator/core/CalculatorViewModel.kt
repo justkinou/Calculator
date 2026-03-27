@@ -2,12 +2,14 @@ package com.example.calculator.core
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import net.objecthunter.exp4j.ExpressionBuilder
-import java.math.BigDecimal
-import java.math.RoundingMode
 import java.util.Stack
 
 data class CalculatorState(
@@ -19,10 +21,21 @@ data class CalculatorState(
 class CalculatorViewModel : ViewModel() {
     private val _state = MutableStateFlow(CalculatorState())
     val state: StateFlow<CalculatorState> = _state
+    private var clearJob: Job? = null
 
     fun onClick(symbol: Symbol) {
         when (symbol) {
-            Symbol.Clear -> clearInput()
+            Symbol.Clear -> {
+                if (clearJob?.isActive == true) {
+                    clearJob?.cancel()
+                    clearAll()
+                } else {
+                    clearJob = viewModelScope.launch {
+                        delay(200)
+                        clearInput()
+                    }
+                }
+            }
             Symbol.ClearAll -> clearAll()
             Symbol.Backspace -> backspace()
             Symbol.Add -> changeOperator('+')

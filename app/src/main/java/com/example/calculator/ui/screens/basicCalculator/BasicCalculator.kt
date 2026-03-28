@@ -18,6 +18,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,10 +37,18 @@ import com.example.calculator.ui.theme.White
 fun BasicCalculator(
     calculatorViewModel: CalculatorViewModel = viewModel<CalculatorViewModel>()
 ) {
-    val configuration = LocalConfiguration.current
     val state = calculatorViewModel.state.collectAsState()
     val currNumberScrollState = rememberScrollState()
     val expressionScrollState = rememberScrollState()
+    val orientation = LocalConfiguration.current.orientation
+    val scale = minOf(
+        LocalWindowInfo.current.containerSize.width,
+        LocalWindowInfo.current.containerSize.height,
+    ) / 720f
+
+    val expressionFontSize = (14 * scale).sp
+    val numberFontSize = (20 * scale).sp
+    val buttonFontSize = (14 * scale).sp
 
     val cols = 4
     val numPadSymbols = listOf(
@@ -76,16 +86,15 @@ fun BasicCalculator(
                 ) {
                     Text(
                         text = calculatorViewModel.toString(),
-                        fontSize = if (configuration.orientation == ORIENTATION_PORTRAIT) 20.sp else 16.sp,
-                        modifier = Modifier
-                            .horizontalScroll(expressionScrollState),
+                        fontSize = expressionFontSize,
+                        modifier = Modifier.horizontalScroll(expressionScrollState),
                         color = QuickSilver,
                     )
                 }
 
                 Text(
-                    text = state.value.currNumber.toString(),
-                    fontSize = if (configuration.orientation == ORIENTATION_PORTRAIT) 32.sp else 20.sp,
+                    text = state.value.currNumber?.toString() ?: "0",
+                    fontSize = numberFontSize,
                     modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(currNumberScrollState),
@@ -96,7 +105,7 @@ fun BasicCalculator(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(if (configuration.orientation == ORIENTATION_PORTRAIT) 4f else 3f),
+                    .weight(if (orientation == ORIENTATION_PORTRAIT) 5f else 3f),
             ) {
                 repeat(numPadSymbols.size / cols) { row ->
                     Row(
@@ -117,15 +126,12 @@ fun BasicCalculator(
 
                             CalculatorButton(
                                 backgroundColor = backgroundColor,
-                                onClick = {
-                                    calculatorViewModel.onClick(symbol)
-                                },
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .weight(1f)
-                            ) {
-                                Text(symbol.getSymbol(), color = textColor)
-                            }
+                                onClick = { calculatorViewModel.onClick(symbol) },
+                                label = symbol.getSymbol(),
+                                textColor = textColor,
+                                fontSize = buttonFontSize,
+                                modifier = Modifier.fillMaxHeight().weight(1f)
+                            )
                         }
                     }
                 }

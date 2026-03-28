@@ -2,7 +2,6 @@ package com.example.calculator.ui.screens.advancedCalculator
 
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,11 +35,18 @@ import com.example.calculator.ui.theme.White
 fun AdvancedCalculator(
     calculatorViewModel: CalculatorViewModel = viewModel<CalculatorViewModel>()
 ) {
-    val configuration = LocalConfiguration.current
-
     val state = calculatorViewModel.state.collectAsState()
     val currNumberScrollState = rememberScrollState()
     val expressionScrollState = rememberScrollState()
+    val orientation = LocalConfiguration.current.orientation
+    val scale = minOf(
+        LocalWindowInfo.current.containerSize.width,
+        LocalWindowInfo.current.containerSize.height,
+    ) / 720f
+
+    val expressionFontSize = (14 * scale).sp
+    val numberFontSize = (24 * scale).sp
+    val buttonFontSize = (14 * scale).sp
 
     LaunchedEffect(state.value.currNumber) {
         currNumberScrollState.animateScrollTo(currNumberScrollState.maxValue)
@@ -50,314 +57,87 @@ fun AdvancedCalculator(
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) {
-        padding -> Column(
+            padding -> Column(
+        modifier = Modifier
+            .padding(padding)
+            .fillMaxSize(),
+    ) {
+        Column(
             modifier = Modifier
-                .padding(padding)
-                .fillMaxSize(),
+                .fillMaxWidth()
+                .padding(10.dp)
+                .weight(1f),
+            horizontalAlignment = Alignment.End,
         ) {
-            Column(
+            Text(
+                text = calculatorViewModel.toString(),
+                fontSize = expressionFontSize,
+                modifier = Modifier.horizontalScroll(expressionScrollState),
+                color = QuickSilver,
+            )
+
+            Text(
+                text = state.value.currNumber?.toString() ?: "0",
+                fontSize = numberFontSize,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp)
-                    .weight(1f),
-                horizontalAlignment = Alignment.End,
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = calculatorViewModel.toString(),
-                        fontSize = if (configuration.orientation == ORIENTATION_PORTRAIT) 20.sp else 16.sp,
-                        modifier = Modifier
-                            .horizontalScroll(expressionScrollState),
-                        color = QuickSilver,
-                    )
-                }
+                    .horizontalScroll(currNumberScrollState),
+                textAlign = TextAlign.Right,
+            )
+        }
 
-                Text(
-                    text = state.value.currNumber.toString(),
-                    fontSize = if (configuration.orientation == ORIENTATION_PORTRAIT) 32.sp else 20.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(currNumberScrollState),
-                    textAlign = TextAlign.Right,
-                )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(if (orientation == ORIENTATION_PORTRAIT) 5f else 3f),
+        ) {
+            Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                CalculatorButton(backgroundColor = QuickSilver, onClick = { calculatorViewModel.onClick(Symbol.ClearAll) }, label = Symbol.ClearAll.getSymbol(), textColor = Black, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = QuickSilver, onClick = { calculatorViewModel.onClick(Symbol.Clear) }, label = Symbol.Clear.getSymbol(), textColor = Black, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = QuickSilver, onClick = { calculatorViewModel.onClick(Symbol.ToggleSign) }, label = Symbol.ToggleSign.getSymbol(), textColor = Black, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = QuickSilver, onClick = { calculatorViewModel.onClick(Symbol.CommonLogarithm) }, label = Symbol.CommonLogarithm.getSymbol(), textColor = Black, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = QuickSilver, onClick = { calculatorViewModel.onClick(Symbol.NaturalLogarithm) }, label = Symbol.NaturalLogarithm.getSymbol(), textColor = Black, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
             }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(4f),
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) {
-                    CalculatorButton(
-                        backgroundColor = QuickSilver,
-                        onClick = { calculatorViewModel.onClick(Symbol.ClearAll) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.ClearAll.getSymbol(), color = Black)
-                    }
+            Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Sines) }, label = Symbol.Sines.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Cosines) }, label = Symbol.Cosines.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Tangent) }, label = Symbol.Tangent.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Percent) }, label = Symbol.Percent.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = VitaminC, onClick = { calculatorViewModel.onClick(Symbol.Divide) }, label = Symbol.Divide.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+            }
 
-                    CalculatorButton(
-                        backgroundColor = QuickSilver,
-                        onClick = { calculatorViewModel.onClick(Symbol.Clear) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Clear.getSymbol(), color = Black)
-                    }
+            Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Seven) }, label = Symbol.Seven.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Eight) }, label = Symbol.Eight.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Nine) }, label = Symbol.Nine.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Power) }, label = Symbol.Power.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = VitaminC, onClick = { calculatorViewModel.onClick(Symbol.Multiply) }, label = Symbol.Multiply.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+            }
 
-                    CalculatorButton(
-                        backgroundColor = QuickSilver,
-                        onClick = { calculatorViewModel.onClick(Symbol.ToggleSign) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.ToggleSign.getSymbol(), color = Black)
-                    }
+            Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Four) }, label = Symbol.Four.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Five) }, label = Symbol.Five.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Six) }, label = Symbol.Six.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Square) }, label = Symbol.Square.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = VitaminC, onClick = { calculatorViewModel.onClick(Symbol.Subtract) }, label = Symbol.Subtract.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+            }
 
-                    CalculatorButton(
-                        backgroundColor = QuickSilver,
-                        onClick = { calculatorViewModel.onClick(Symbol.CommonLogarithm) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.CommonLogarithm.getSymbol(), color = Black)
-                    }
+            Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.One) }, label = Symbol.One.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Two) }, label = Symbol.Two.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Three) }, label = Symbol.Three.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.SquareRoot) }, label = Symbol.SquareRoot.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = VitaminC, onClick = { calculatorViewModel.onClick(Symbol.Add) }, label = Symbol.Add.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+            }
 
-                    CalculatorButton(
-                        backgroundColor = QuickSilver,
-                        onClick = { calculatorViewModel.onClick(Symbol.NaturalLogarithm) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.NaturalLogarithm.getSymbol(), color = Black)
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) {
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Sines) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Sines.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Cosines) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Cosines.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Tangent) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Tangent.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Percent) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Percent.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = VitaminC,
-                        onClick = { calculatorViewModel.onClick(Symbol.Divide) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Divide.getSymbol(), color = White)
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) {
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Seven) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Seven.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Eight) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Eight.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Nine) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Nine.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Power) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Power.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = VitaminC,
-                        onClick = { calculatorViewModel.onClick(Symbol.Multiply) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Multiply.getSymbol(), color = White)
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) {
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Four) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Four.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Five) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Five.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Six) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Six.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Square) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Square.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = VitaminC,
-                        onClick = { calculatorViewModel.onClick(Symbol.Subtract) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Subtract.getSymbol(), color = White)
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) {
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.One) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.One.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Two) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Two.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Three) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Three.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.SquareRoot) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.SquareRoot.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = VitaminC,
-                        onClick = { calculatorViewModel.onClick(Symbol.Add) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Add.getSymbol(), color = White)
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) {
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.DecimalPoint) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.DecimalPoint.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Zero) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Zero.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = Carbon,
-                        onClick = { calculatorViewModel.onClick(Symbol.Backspace) },
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Backspace.getSymbol(), color = White)
-                    }
-
-                    CalculatorButton(
-                        backgroundColor = VitaminC,
-                        onClick = { calculatorViewModel.onClick(Symbol.Evaluate) },
-                        modifier = Modifier.weight(2f).fillMaxHeight()
-                    ) {
-                        Text(Symbol.Evaluate.getSymbol(), color = White)
-                    }
-                }
+            Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.DecimalPoint) }, label = Symbol.DecimalPoint.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Zero) }, label = Symbol.Zero.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = Carbon, onClick = { calculatorViewModel.onClick(Symbol.Backspace) }, label = Symbol.Backspace.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(1f).fillMaxHeight())
+                CalculatorButton(backgroundColor = VitaminC, onClick = { calculatorViewModel.onClick(Symbol.Evaluate) }, label = Symbol.Evaluate.getSymbol(), textColor = White, fontSize = buttonFontSize, modifier = Modifier.weight(2f).fillMaxHeight())
             }
         }
+    }
     }
 }

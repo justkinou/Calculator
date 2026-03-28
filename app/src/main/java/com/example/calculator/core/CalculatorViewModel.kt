@@ -15,7 +15,7 @@ import java.util.Stack
 data class CalculatorState(
     val numberStack: Stack<InputNumber> = Stack(),
     val operatorStack: Stack<Char> = Stack(),
-    val currNumber: InputNumber = InputNumber(),
+    val currNumber: InputNumber? = null,
 )
 
 class CalculatorViewModel : ViewModel() {
@@ -51,7 +51,7 @@ class CalculatorViewModel : ViewModel() {
             Symbol.Power -> changeOperator('^')
             Symbol.Sines -> {
                 _state.update { currState ->
-                    val currNumber = currState.currNumber.copy()
+                    val currNumber = currState.currNumber?.copy() ?: InputNumber()
                     currNumber.sin()
                     currState.copy(
                         currNumber = currNumber
@@ -60,7 +60,7 @@ class CalculatorViewModel : ViewModel() {
             }
             Symbol.Cosines -> {
                 _state.update { currState ->
-                    val currNumber = currState.currNumber.copy()
+                    val currNumber = currState.currNumber?.copy() ?: InputNumber()
                     currNumber.cos()
                     currState.copy(
                         currNumber = currNumber
@@ -69,7 +69,7 @@ class CalculatorViewModel : ViewModel() {
             }
             Symbol.Tangent -> {
                 _state.update { currState ->
-                    val currNumber = currState.currNumber.copy()
+                    val currNumber = currState.currNumber?.copy() ?: InputNumber()
                     currNumber.tan()
                     currState.copy(
                         currNumber = currNumber
@@ -78,7 +78,7 @@ class CalculatorViewModel : ViewModel() {
             }
             Symbol.NaturalLogarithm -> {
                 _state.update { currState ->
-                    val currNumber = currState.currNumber.copy()
+                    val currNumber = currState.currNumber?.copy() ?: InputNumber()
                     currNumber.ln()
                     currState.copy(
                         currNumber = currNumber
@@ -87,7 +87,7 @@ class CalculatorViewModel : ViewModel() {
             }
             Symbol.CommonLogarithm -> {
                 _state.update { currState ->
-                    val currNumber = currState.currNumber.copy()
+                    val currNumber = currState.currNumber?.copy() ?: InputNumber()
                     currNumber.log()
                     currState.copy(
                         currNumber = currNumber
@@ -96,7 +96,7 @@ class CalculatorViewModel : ViewModel() {
             }
             Symbol.Square -> {
                 _state.update { currState ->
-                    val currNumber = currState.currNumber.copy()
+                    val currNumber = currState.currNumber?.copy() ?: InputNumber()
                     currNumber.pow2()
                     currState.copy(
                         currNumber = currNumber
@@ -105,7 +105,7 @@ class CalculatorViewModel : ViewModel() {
             }
             Symbol.SquareRoot -> {
                 _state.update { currState ->
-                    val currNumber = currState.currNumber.copy()
+                    val currNumber = currState.currNumber?.copy() ?: InputNumber()
                     currNumber.sqrt()
                     currState.copy(
                         currNumber = currNumber
@@ -114,7 +114,7 @@ class CalculatorViewModel : ViewModel() {
             }
             Symbol.Percent -> {
                 _state.update { currState ->
-                    val currNumber = currState.currNumber.copy()
+                    val currNumber = currState.currNumber?.copy() ?: InputNumber()
                     currNumber.percent()
                     currState.copy(
                         currNumber = currNumber
@@ -132,13 +132,17 @@ class CalculatorViewModel : ViewModel() {
         _state.update { currState ->
             val numberStack = copyStack(currState.numberStack)
             val operatorStack = copyStack(currState.operatorStack)
-            var currNumber = InputNumber()
+            var currNumber = currState.currNumber?.copy()
 
-            if (numberStack.isNotEmpty()) {
-                currNumber = numberStack.pop()
-                if (operatorStack.isNotEmpty()) {
-                    operatorStack.pop()
+            if (currNumber == null) {
+                if (operatorStack.size == numberStack.size) {
+                    if (operatorStack.isNotEmpty()) {
+                        operatorStack.pop()
+                        currNumber = numberStack.pop()
+                    }
                 }
+            } else {
+                currNumber = null
             }
 
             currState.copy(
@@ -153,16 +157,23 @@ class CalculatorViewModel : ViewModel() {
         _state.update { currState ->
             val numberStack = copyStack(currState.numberStack)
             val operatorStack = copyStack(currState.operatorStack)
-            var currNumber = currState.currNumber.copy()
+            var currNumber = currState.currNumber?.copy()
 
-            if (currNumber.backspace()) {
+            if (currNumber == null) {
+                if (operatorStack.size == numberStack.size) {
+                    if (operatorStack.isNotEmpty()) {
+                        operatorStack.pop()
+                        currNumber = numberStack.pop()
+                    }
+                }
+            } else if (currNumber.backspace()) {
                 if (numberStack.isNotEmpty()) {
                     currNumber = numberStack.pop()
                     if (numberStack.size < operatorStack.size) {
                         operatorStack.pop()
                     }
                 } else {
-                    currNumber = InputNumber()
+                    currNumber = null
                 }
             }
 
@@ -178,10 +189,18 @@ class CalculatorViewModel : ViewModel() {
         _state.update { currState ->
             val numberStack = copyStack(currState.numberStack)
             val operatorStack = copyStack(currState.operatorStack)
-            var currNumber = currState.currNumber.copy()
+            var currNumber = currState.currNumber?.copy()
 
-            numberStack.push(currNumber)
-            currNumber = InputNumber()
+            if (currNumber == null) {
+                if (operatorStack.size == numberStack.size) {
+                    if (operatorStack.isNotEmpty()) {
+                        operatorStack.pop()
+                    }
+                }
+            } else {
+                numberStack.push(currNumber)
+                currNumber = null
+            }
             operatorStack.push(operator)
 
             currState.copy(
@@ -207,7 +226,7 @@ class CalculatorViewModel : ViewModel() {
 
     private fun addDecimalPoint() {
         _state.update { currState ->
-            val currNumber = currState.currNumber.copy()
+            val currNumber = currState.currNumber?.copy() ?: InputNumber()
             currNumber.addDecimalPoint()
             currState.copy(
                 currNumber = currNumber
@@ -217,7 +236,7 @@ class CalculatorViewModel : ViewModel() {
 
     private fun toggleSign() {
         _state.update { currState ->
-            val currNumber = currState.currNumber.copy()
+            val currNumber = currState.currNumber?.copy() ?: InputNumber()
             currNumber.toggleSign()
             currState.copy(
                 currNumber = currNumber
@@ -227,7 +246,7 @@ class CalculatorViewModel : ViewModel() {
 
     private fun addDigit(d: Char) {
         _state.update { currState ->
-            val currNumber = currState.currNumber.copy()
+            val currNumber = currState.currNumber?.copy() ?: InputNumber()
             currNumber.addDigit(d)
             currState.copy(
                 currNumber = currNumber,

@@ -53,9 +53,6 @@ class InputNumber {
     }
 
     fun toggleSign() {
-        if (isBlank()) {
-            return
-        }
         if (number[0] == '-') {
             number.deleteAt(0)
         } else {

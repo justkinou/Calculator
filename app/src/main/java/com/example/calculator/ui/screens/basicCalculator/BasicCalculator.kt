@@ -4,11 +4,10 @@ import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Scaffold
@@ -18,77 +17,54 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.calculator.core.CalculatorViewModel
 import com.example.calculator.core.Symbol
-import com.example.calculator.ui.composables.NumPad
+import com.example.calculator.ui.composables.CalculatorButton
 import com.example.calculator.ui.theme.Black
 import com.example.calculator.ui.theme.Carbon
 import com.example.calculator.ui.theme.QuickSilver
 import com.example.calculator.ui.theme.VitaminC
 import com.example.calculator.ui.theme.White
 
-private fun getColorsPortrait(i: Int, j: Int, cols: Int): List<Color> {
-    val res = mutableListOf(Carbon, White)
-    if (j == cols - 1) {
-        res[0] = VitaminC
-    } else if (i == 0) {
-        res[0] = QuickSilver
-        res[1] = Black
-    }
-    return res
-}
-
-private fun getColorsLandscape(i: Int, j: Int, cols: Int): List<Color> {
-    val res = mutableListOf(Carbon, White)
-    if (j == cols - 1) {
-        res[0] = VitaminC
-    } else if (j > 2) {
-        res[0] = QuickSilver
-        res[1] = Black
-    }
-    return res
-}
-
 @Composable
 fun BasicCalculator(
     calculatorViewModel: CalculatorViewModel = viewModel<CalculatorViewModel>()
 ) {
-    val configuration = LocalConfiguration.current
-
-    val expression = calculatorViewModel.expressionText.collectAsState()
+    val state = calculatorViewModel.state.collectAsState()
+    val currNumberScrollState = rememberScrollState()
     val expressionScrollState = rememberScrollState()
+    val orientation = LocalConfiguration.current.orientation
+    val scale = minOf(
+        LocalWindowInfo.current.containerSize.width,
+        LocalWindowInfo.current.containerSize.height,
+    ) / 720f
 
-    LaunchedEffect(expression.value) {
-        expressionScrollState.animateScrollTo(expressionScrollState.maxValue)
-    }
+    val expressionFontSize = (14 * scale).sp
+    val numberFontSize = (20 * scale).sp
+    val buttonFontSize = (14 * scale).sp
 
-    var cols = 4
-    var numPadSymbols = listOf(
-        listOf(Symbol.ClearAll, Symbol.Clear, Symbol.ToggleSign, Symbol.Divide),
-        listOf(Symbol.Seven, Symbol.Eight, Symbol.Nine, Symbol.Multiply),
-        listOf(Symbol.Four, Symbol.Five, Symbol.Six, Symbol.Subtract),
-        listOf(Symbol.One, Symbol.Two, Symbol.Three, Symbol.Add),
-        listOf(Symbol.DecimalPoint, Symbol.Zero, Symbol.Backspace, Symbol.Evaluate),
+    val cols = 4
+    val numPadSymbols = listOf(
+        Symbol.ClearAll, Symbol.Clear, Symbol.ToggleSign, Symbol.Divide,
+        Symbol.Seven, Symbol.Eight, Symbol.Nine, Symbol.Multiply,
+        Symbol.Four, Symbol.Five, Symbol.Six, Symbol.Subtract,
+        Symbol.One, Symbol.Two, Symbol.Three, Symbol.Add,
+        Symbol.DecimalPoint, Symbol.Zero, Symbol.Backspace, Symbol.Evaluate,
     )
 
-    if (configuration.orientation != ORIENTATION_PORTRAIT) {
-        cols = 5
-        numPadSymbols = listOf(
-            listOf(Symbol.Seven, Symbol.Eight, Symbol.Nine, Symbol.Divide, Symbol.ClearAll),
-            listOf(Symbol.Four, Symbol.Five, Symbol.Six, Symbol.Multiply, Symbol.Clear),
-            listOf(Symbol.One, Symbol.Two, Symbol.Three, Symbol.Subtract, Symbol.ToggleSign),
-            listOf(Symbol.DecimalPoint, Symbol.Zero, Symbol.Backspace, Symbol.Add, Symbol.Evaluate),
-        )
+    LaunchedEffect(state.value.currNumber) {
+        currNumberScrollState.animateScrollTo(currNumberScrollState.maxValue)
     }
 
-    var getColors = ::getColorsPortrait
-    if (configuration.orientation != ORIENTATION_PORTRAIT) {
-        getColors = ::getColorsLandscape
+    LaunchedEffect(state.value.numberStack, state.value.operatorStack) {
+        expressionScrollState.animateScrollTo(expressionScrollState.maxValue)
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) {
@@ -96,34 +72,70 @@ fun BasicCalculator(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(expressionScrollState)
+                    .padding(10.dp)
                     .weight(1f),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End,
+                horizontalAlignment = Alignment.End,
             ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = calculatorViewModel.toString(),
+                        fontSize = expressionFontSize,
+                        modifier = Modifier.horizontalScroll(expressionScrollState),
+                        color = QuickSilver,
+                    )
+                }
+
                 Text(
-                    text = expression.value,
-                    fontSize = 32.sp,
+                    text = state.value.currNumber?.toString() ?: "0",
+                    fontSize = numberFontSize,
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    color = Carbon,
+                        .fillMaxWidth()
+                        .horizontalScroll(currNumberScrollState),
                     textAlign = TextAlign.Right,
                 )
             }
 
-            NumPad(
-                cols = cols,
-                symbols = numPadSymbols,
-                onClick = calculatorViewModel::onClick,
+            Column(
                 modifier = Modifier
-                    .weight(4f),
-                getColors = getColors
-            )
+                    .fillMaxWidth()
+                    .weight(if (orientation == ORIENTATION_PORTRAIT) 5f else 3f),
+            ) {
+                repeat(numPadSymbols.size / cols) { row ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        repeat(cols) { col ->
+                            val symbol = numPadSymbols[row * cols + col]
+                            var backgroundColor = Carbon
+                            var textColor = White
+                            if (row == 0) {
+                                backgroundColor = QuickSilver
+                                textColor = Black
+                            } else if (col == cols - 1) {
+                                backgroundColor = VitaminC
+                            }
+
+                            CalculatorButton(
+                                backgroundColor = backgroundColor,
+                                onClick = { calculatorViewModel.onClick(symbol) },
+                                label = symbol.getSymbol(),
+                                textColor = textColor,
+                                fontSize = buttonFontSize,
+                                modifier = Modifier.fillMaxHeight().weight(1f)
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

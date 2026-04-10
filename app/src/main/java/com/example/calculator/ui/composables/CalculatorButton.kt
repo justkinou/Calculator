@@ -27,7 +27,11 @@ fun CalculatorButton(
             try {
                 onClick()
             } catch (e: Exception) {
-                Toast.makeText(context, "Failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Failed: ${e.message}",
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
         },
         modifier = modifier,

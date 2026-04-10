@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun CalculatorButton(
@@ -32,6 +33,12 @@ fun CalculatorButton(
         modifier = modifier,
         shape = RectangleShape,
         colors = ButtonDefaults.buttonColors(containerColor = backgroundColor),
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 0.dp,
+            pressedElevation = 0.dp,
+            focusedElevation = 0.dp,
+            hoveredElevation = 0.dp,
+        ),
     ) {
         Text(text = label, color = textColor, fontSize = fontSize)
     }

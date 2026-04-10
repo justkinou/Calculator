@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,6 +30,13 @@ fun HomeScreen(
     ) {
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == ORIENTATION_PORTRAIT
+    val scale = minOf(
+        LocalWindowInfo.current.containerSize.width,
+        LocalWindowInfo.current.containerSize.height,
+    ) / 720f
+    val titleFontSize = ((if (isPortrait) 24 else 18) * scale).sp
+    val authorFontSize = ((if (isPortrait) 18 else 12) * scale).sp
+    val buttonFontSize = ((if (isPortrait) 18 else 12) * scale).sp
 
     Scaffold(modifier = Modifier.fillMaxSize()) {
         padding -> Column(
@@ -41,14 +49,14 @@ fun HomeScreen(
         ) {
             Text(
                 "Calculator",
-                fontSize = if (isPortrait) 48.sp else 24.sp,
+                fontSize = titleFontSize,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
             )
 
             Text(
                 "Author: Andrii Bialkovskyi",
-                fontSize = if (isPortrait) 24.sp else 16.sp,
+                fontSize = authorFontSize,
             )
 
             Column(
@@ -64,7 +72,7 @@ fun HomeScreen(
                 ) {
                     Text(
                         "Basic Calculator",
-                        fontSize = if (isPortrait) 24.sp else 16.sp,
+                        fontSize = buttonFontSize,
                     )
                 }
 
@@ -74,7 +82,7 @@ fun HomeScreen(
                 ) {
                     Text(
                         "Advanced Calculator",
-                        fontSize = if (isPortrait) 24.sp else 16.sp,
+                        fontSize = buttonFontSize,
                     )
                 }
 
@@ -84,7 +92,7 @@ fun HomeScreen(
                 ) {
                     Text(
                         "About",
-                        fontSize = if (isPortrait) 24.sp else 16.sp,
+                        fontSize = buttonFontSize,
                     )
                 }
 
@@ -94,7 +102,7 @@ fun HomeScreen(
                 ) {
                     Text(
                         "Exit",
-                        fontSize = if (isPortrait) 24.sp else 16.sp,
+                        fontSize = buttonFontSize,
                     )
                 }
             }
